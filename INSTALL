@@ -1,0 +1,9 @@
+Building Torrentcoin
+
+See doc/readme-qt.rst for instructions on building Torrentcoin-Qt,
+the intended-for-end-users, nice-graphical-interface, reference
+implementation of Torrentcoin.
+
+See doc/build-*.txt for instructions on building torrentcoind,
+the intended-for-services, no-graphical-interface, reference
+implementation of Torrentcoin.
