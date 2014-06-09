@@ -617,7 +617,6 @@ Value gettorrent(const Array& params, bool fHelp)
     uint256 hashBlock = 0;
     if (!GetTransaction(hash, tx, hashBlock,true))
         return false;
-    printf("--------------------2--------------\n");
    /* if (tx.vout.size() < 3)
     {
          return false;

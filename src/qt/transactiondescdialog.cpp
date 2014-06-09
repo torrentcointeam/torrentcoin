@@ -22,3 +22,11 @@ TransactionDescDialog::~TransactionDescDialog()
 {
     delete ui;
 }
+
+TransactionDescDialog::TransactionDescDialog(const QString html, QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::TransactionDescDialog)
+{
+    ui->setupUi(this);
+    ui->detailText->setHtml(html);
+}

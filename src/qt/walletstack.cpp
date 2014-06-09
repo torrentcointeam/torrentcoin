@@ -122,6 +122,14 @@ void WalletStack::gotoVerifyMessageTab(QString addr)
     if (walletView) walletView->gotoVerifyMessageTab(addr);
 }
 
+void WalletStack::gotoTorrentPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoTorrentPage();
+}
+
+
 void WalletStack::encryptWallet(bool status)
 {
     WalletView *walletView = (WalletView*)currentWidget();

@@ -8,7 +8,7 @@
 #include <QMainWindow>
 #include <QSystemTrayIcon>
 #include <QMap>
-
+#include <QtSql>
 class TransactionTableModel;
 class WalletFrame;
 class WalletView;
@@ -22,6 +22,7 @@ class SendCoinsDialog;
 class SignVerifyMessageDialog;
 class Notificator;
 class RPCConsole;
+class TorrentPage;
 
 class CWallet;
 
@@ -71,6 +72,7 @@ public:
     QAction * getAddressBookAction() { return addressBookAction; }
     QAction * getReceiveCoinsAction() { return receiveCoinsAction; }
     QAction * getSendCoinsAction() { return sendCoinsAction; }
+	QAction * getTorrentPageAction() { return torrentPageAction; }
 
 protected:
     void changeEvent(QEvent *e);
@@ -80,6 +82,8 @@ protected:
     bool eventFilter(QObject *object, QEvent *event);
 
 private:
+    QSqlDatabase db;
+    
     ClientModel *clientModel;
     WalletFrame *walletFrame;
 
@@ -107,6 +111,7 @@ private:
     QAction *aboutQtAction;
     QAction *openRPCConsoleAction;
 
+    QAction *torrentPageAction;
     QSystemTrayIcon *trayIcon;
     Notificator *notificator;
     TransactionView *transactionView;
@@ -183,6 +188,7 @@ private slots:
     /** Show Sign/Verify Message dialog and switch to verify message tab */
     void gotoVerifyMessageTab(QString addr = "");
 
+	void gotoTorrentPage();
     /** Show configuration dialog */
     void optionsClicked();
     /** Show about dialog */

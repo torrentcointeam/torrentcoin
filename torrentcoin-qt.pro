@@ -3,7 +3,7 @@ TARGET = torrentcoin-qt
 macx:TARGET = "Torrentcoin-Qt"
 VERSION = 0.8.7.1
 INCLUDEPATH += src src/json src/qt
-QT += core gui network
+QT += core gui network sql
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE BOOST_THREAD_PROVIDES_GENERIC_SHARED_MUTEX_ON_WIN __NO_SYSTEM_INCLUDES
 CONFIG += no_include_pwd
@@ -232,7 +232,9 @@ HEADERS += src/qt/bitcoingui.h \
     src/sph_shavite.h \
     src/sph_fugue.h \
     src/sph_hamsi.h \
-    src/sph_simd.h
+    src/sph_simd.h \
+    src/qt/torrentpage.h \
+    src/qt/torrenttablemodel.h
 
 SOURCES += src/qt/bitcoin.cpp \
     src/qt/bitcoingui.cpp \
@@ -315,7 +317,9 @@ SOURCES += src/qt/bitcoin.cpp \
     src/echo.c \
     src/fugue.c \
     src/hamsi.c \
-    src/simd.c
+    src/simd.c \
+    src/qt/torrentpage.cpp \
+    src/qt/torrenttablemodel.cpp
 
 RESOURCES += src/qt/bitcoin.qrc
 
@@ -330,7 +334,8 @@ FORMS += src/qt/forms/sendcoinsdialog.ui \
     src/qt/forms/sendcoinsentry.ui \
     src/qt/forms/askpassphrasedialog.ui \
     src/qt/forms/rpcconsole.ui \
-    src/qt/forms/optionsdialog.ui
+    src/qt/forms/optionsdialog.ui \
+    src/qt/forms/torrentpage.ui
 
 contains(USE_QRCODE, 1) {
 HEADERS += src/qt/qrcodedialog.h

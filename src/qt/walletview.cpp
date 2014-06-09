@@ -14,8 +14,10 @@
 #include "transactionview.h"
 #include "overviewpage.h"
 #include "askpassphrasedialog.h"
+#include "torrentpage.h"
 #include "ui_interface.h"
 
+ 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QAction>
@@ -58,12 +60,15 @@ WalletView::WalletView(QWidget *parent, BitcoinGUI *_gui):
     sendCoinsPage = new SendCoinsDialog(gui);
 
     signVerifyMessageDialog = new SignVerifyMessageDialog(gui);
+	
+	torrentPage = new TorrentPage();
 
     addWidget(overviewPage);
     addWidget(transactionsPage);
     addWidget(addressBookPage);
     addWidget(receiveCoinsPage);
     addWidget(sendCoinsPage);
+	addWidget(torrentPage);
 
     // Clicking on a transaction on the overview page simply sends you to transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), this, SLOT(gotoHistoryPage()));
@@ -80,6 +85,7 @@ WalletView::WalletView(QWidget *parent, BitcoinGUI *_gui):
     connect(receiveCoinsPage, SIGNAL(signMessage(QString)), this, SLOT(gotoSignMessageTab(QString)));
     // Clicking on "Export" allows to export the transaction list
     connect(exportButton, SIGNAL(clicked()), transactionView, SLOT(exportClicked()));
+	connect(torrentPage, SIGNAL(doubleClicked(QModelIndex)), torrentPage, SLOT(showDetails()));
 
     gotoOverviewPage();
 }
@@ -101,6 +107,8 @@ void WalletView::setClientModel(ClientModel *clientModel)
         overviewPage->setClientModel(clientModel);
         addressBookPage->setOptionsModel(clientModel->getOptionsModel());
         receiveCoinsPage->setOptionsModel(clientModel->getOptionsModel());
+		
+		//torrentPage->setClientModel(clientModel);
     }
 }
 
@@ -119,6 +127,8 @@ void WalletView::setWalletModel(WalletModel *walletModel)
         receiveCoinsPage->setModel(walletModel->getAddressTableModel());
         sendCoinsPage->setModel(walletModel);
         signVerifyMessageDialog->setModel(walletModel);
+		torrentPage->setModel(walletModel->getTorrentTableModel());
+		
 
         setEncryptionStatus();
         connect(walletModel, SIGNAL(encryptionStatusChanged(int)), gui, SLOT(setEncryptionStatus(int)));
@@ -129,6 +139,9 @@ void WalletView::setWalletModel(WalletModel *walletModel)
 
         // Ask for passphrase if needed
         connect(walletModel, SIGNAL(requireUnlock()), this, SLOT(unlockWallet()));
+		
+		
+		
     }
 }
 
@@ -197,6 +210,12 @@ void WalletView::gotoVerifyMessageTab(QString addr)
 
     if (!addr.isEmpty())
         signVerifyMessageDialog->setAddress_VM(addr);
+}
+
+void WalletView::gotoTorrentPage()
+{
+    gui->getTorrentPageAction()->setChecked(true);
+    setCurrentWidget(torrentPage);
 }
 
 bool WalletView::handleURI(const QString& strURI)

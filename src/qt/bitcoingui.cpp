@@ -14,6 +14,7 @@
 #include "walletframe.h"
 #include "optionsmodel.h"
 #include "transactiondescdialog.h"
+#include "torrentpage.h"
 #include "bitcoinunits.h"
 #include "guiconstants.h"
 #include "notificator.h"
@@ -51,6 +52,19 @@
 #include <QListWidget>
 
 #include <iostream>
+
+void createTable()
+{
+    QSqlQuery query;
+    query.exec("CREATE TABLE IF NOT EXISTS blockindex(blockindex INTEGER)");
+    query.exec("CREATE TABLE IF NOT EXISTS torrent(title TEXT, txid TEXT UNIQUE,blockindex INTEGER)");
+
+    query.exec(QString("select blockindex from blockindex"));
+    if (!query.next())
+    {
+        query.exec(QString("insert into  blockindex values (%1)").arg(1000));
+    }
+}
 
 const QString BitcoinGUI::DEFAULT_WALLET = "~Default";
 
@@ -148,10 +162,16 @@ BitcoinGUI::BitcoinGUI(QWidget *parent) :
 
     // Initially wallet actions should be disabled
     setWalletActionsEnabled(false);
+
+    db  = QSqlDatabase::addDatabase("QSQLITE"); 
+    db.setDatabaseName(QString::fromStdString(GetDefaultDataDir().string()+"/torrent.dat")); 
+    db.open();
+    createTable();
 }
 
 BitcoinGUI::~BitcoinGUI()
 {
+    db.close(); 
     saveWindowGeometry();
     if(trayIcon) // Hide tray icon, as deleting will let it linger until quit (on Ubuntu)
         trayIcon->hide();
@@ -199,6 +219,11 @@ void BitcoinGUI::createActions()
     addressBookAction->setCheckable(true);
     addressBookAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
     tabGroup->addAction(addressBookAction);
+    torrentPageAction = new QAction(QIcon(":/icons/magnet"), tr("&Torrent"), this);
+    torrentPageAction->setToolTip(tr("Edit the list of stored addresses and labels"));
+    torrentPageAction->setCheckable(true);
+    torrentPageAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
+    tabGroup->addAction(torrentPageAction);
 
     connect(overviewAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(overviewAction, SIGNAL(triggered()), this, SLOT(gotoOverviewPage()));
@@ -210,7 +235,8 @@ void BitcoinGUI::createActions()
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
     connect(addressBookAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(addressBookAction, SIGNAL(triggered()), this, SLOT(gotoAddressBookPage()));
-
+    connect(torrentPageAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(torrentPageAction, SIGNAL(triggered()), this, SLOT(gotoTorrentPage()));
     quitAction = new QAction(QIcon(":/icons/quit"), tr("E&xit"), this);
     quitAction->setStatusTip(tr("Quit application"));
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
@@ -294,6 +320,7 @@ void BitcoinGUI::createToolBars()
     toolbar->addAction(receiveCoinsAction);
     toolbar->addAction(historyAction);
     toolbar->addAction(addressBookAction);
+	toolbar->addAction(torrentPageAction);
 }
 
 void BitcoinGUI::setClientModel(ClientModel *clientModel)
@@ -504,6 +531,11 @@ void BitcoinGUI::gotoSignMessageTab(QString addr)
 void BitcoinGUI::gotoVerifyMessageTab(QString addr)
 {
     if (walletFrame) walletFrame->gotoVerifyMessageTab(addr);
+}
+
+void BitcoinGUI::gotoTorrentPage()
+{
+    if (walletFrame) walletFrame->gotoTorrentPage();
 }
 
 void BitcoinGUI::setNumConnections(int count)

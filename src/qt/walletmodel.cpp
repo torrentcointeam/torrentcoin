@@ -7,6 +7,7 @@
 #include "optionsmodel.h"
 #include "addresstablemodel.h"
 #include "transactiontablemodel.h"
+#include "torrenttablemodel.h"
 
 #include "ui_interface.h"
 #include "wallet.h"
@@ -26,6 +27,7 @@ WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *p
 {
     addressTableModel = new AddressTableModel(wallet, this);
     transactionTableModel = new TransactionTableModel(wallet, this);
+    torrentTableModel = new TorrentTableModel(this);
 
     // This timer will be fired repeatedly to update the balance
     pollTimer = new QTimer(this);
@@ -258,7 +260,10 @@ TransactionTableModel *WalletModel::getTransactionTableModel()
 {
     return transactionTableModel;
 }
-
+TorrentTableModel *WalletModel::getTorrentTableModel()
+{
+    return torrentTableModel;
+}
 WalletModel::EncryptionStatus WalletModel::getEncryptionStatus() const
 {
     if(!wallet->IsCrypted())
