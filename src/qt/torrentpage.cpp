@@ -44,11 +44,10 @@ int getTorrentBlockCount()
 void updateTorrent(int index)
 {
     try{
-        char c[10];
-        itoa(index,c,10);
+        QString s = QString::number(index, 10);  
         std::vector<std::string> args;
         args.push_back("getblockhash");
-        args.push_back(c);
+        args.push_back(s.toStdString());
         Value result = tableRPC.execute(args[0],RPCConvertValues(args[0], std::vector<std::string>(args.begin() + 1, args.end())));
         if (result.type() == str_type)
         {
